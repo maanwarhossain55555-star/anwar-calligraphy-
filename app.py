@@ -9,7 +9,8 @@ API_KEY = "AIzaSyAX-YKKLj8BQ2d8HLk1v-LOoqskg2Wmp-o"
 
 try:
     genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash') # লেটেস্ট ফাস্ট মডেল
+    # মডেল পরিবর্তন করা হয়েছে: gemini-pro (সব ভার্সনে সাপোর্ট করে)
+    model = genai.GenerativeModel('gemini-pro') 
 except Exception as e:
     st.error("API কনফিগারেশনে সমস্যা হয়েছে।")
 
@@ -51,7 +52,6 @@ if st.button("পূর্ণাঙ্গ তারকিব বের করু
                 st.markdown('</div>', unsafe_allow_html=True)
                 
             except Exception as e:
-                # সঠিক এরর মেসেজ দেখানো
                 st.error(f"দুঃখিত, সমস্যাটি হলো: {str(e)}")
     else:
         st.warning("আগে একটি আরবি বাক্য লিখুন।")
