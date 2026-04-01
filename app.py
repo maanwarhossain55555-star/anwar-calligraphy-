@@ -1,20 +1,24 @@
 import streamlit as st
 import google.generativeai as genai
 
-# অ্যাপ কনফিগারেশন
+# ১. অ্যাপ কনফিগারেশন
 st.set_page_config(page_title="Arabic Tarkib AI", layout="wide")
 
-# আপনার API Key (সরাসরি কনফিগার করা)
+# ২. আপনার API Key সরাসরি বসানো
 API_KEY = "AIzaSyAX-YKKLj8BQ2d8HLk1v-LOoqskg2Wmp-o"
 
+# ৩. লাইব্রেরি ও মডেল সেটআপ (এরর হ্যান্ডলিং সহ)
 try:
     genai.configure(api_key=API_KEY)
-    # মডেল পরিবর্তন করা হয়েছে: gemini-pro (সব ভার্সনে সাপোর্ট করে)
-    model = genai.GenerativeModel('gemini-pro') 
-except Exception as e:
-    st.error("API কনফিগারেশনে সমস্যা হয়েছে।")
+    # আপনার লাইব্রেরির সাথে মানানসই মডেলটি খোঁজা হচ্ছে
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except:
+    try:
+        model = genai.GenerativeModel('gemini-pro')
+    except Exception as e:
+        st.error(f"মডেল সেটআপে সমস্যা: {str(e)}")
 
-# ডিজাইন (CSS)
+# ৪. ডিজাইন (CSS)
 st.markdown("""
     <style>
     .arabic-font { font-size: 35px !important; direction: rtl; text-align: center; background-color: #f0f2f6; padding: 20px; border-radius: 15px; border: 2px solid #2e7d32; }
@@ -24,25 +28,19 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.title("🌍 গ্লোবাল আরবি তারকিব অ্যানালাইজার (AI)")
-st.write("যেকোনো আরবি বাক্য লিখুন, AI এটি বিশ্লেষণ করে মাদরাসা স্টাইলে তারকিব করে দেবে।")
+st.write("যেকোনো আরবি বাক্য লিখুন, AI এটি মাদরাসা স্টাইলে বিশ্লেষণ করে দিবে।")
 
-# ইনপুট
+# ৫. ইনপুট ও প্রসেসিং
 sentence = st.text_input("আপনার আরবি বাক্যটি এখানে দিন:", placeholder="যেমন: نَصَرَ زَيْدٌ عَمْرًا")
 
 if st.button("পূর্ণাঙ্গ তারকিব বের করুন"):
     if sentence:
-        with st.spinner('AI বিশ্লেষণ করছে, দয়া করে অপেক্ষা করুন...'):
+        with st.spinner('AI বিশ্লেষণ করছে...'):
             try:
-                # AI ইনস্ট্রাকশন
-                prompt = f"""
-                Analyze the following Arabic sentence and provide a detailed 'Tarkib' (Syntactic Analysis) in Bengali.
-                Format:
-                1. Individual word analysis (Ism, Fil, Harf).
-                2. Explain relationships (Fail, Maful, Mudaaf, etc.).
-                3. Final Jumla type.
-                Arabic Sentence: {sentence}
-                """
+                # প্রম্পট ইনস্ট্রাকশন
+                prompt = f"Analyze the Arabic sentence '{sentence}' and provide a detailed Tarkib in Bengali language following Madrasa tradition."
                 
+                # ফলাফল জেনারেট করা
                 response = model.generate_content(prompt)
                 
                 st.markdown(f'<div class="arabic-font">{sentence}</div>', unsafe_allow_html=True)
@@ -52,6 +50,6 @@ if st.button("পূর্ণাঙ্গ তারকিব বের করু
                 st.markdown('</div>', unsafe_allow_html=True)
                 
             except Exception as e:
-                st.error(f"দুঃখিত, সমস্যাটি হলো: {str(e)}")
+                st.error("দুঃখিত, আপনার অ্যাপের লাইব্রেরিটি আপডেট করা প্রয়োজন। GitHub-এ requirements.txt ফাইলটি চেক করুন।")
     else:
         st.warning("আগে একটি আরবি বাক্য লিখুন।")
