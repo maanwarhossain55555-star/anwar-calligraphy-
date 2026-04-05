@@ -3,11 +3,24 @@ import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Arabic Calligraphy Generator", layout="centered")
 
-st.markdown("<h2 style='text-align: center;'>আরবি ক্যালিগ্রাফি জেনারেটর (Thuluth Style)</h2>", unsafe_allow_html=True)
+# CSS দিয়ে ৩D শ্যাডো এফেক্ট তৈরি করা
+st.markdown("""
+<style>
+    .calligraphy-title {
+        text-align: center;
+        font-family: 'Aref Ruqaa', serif;
+        font-size: 30px;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("<h2 class='calligraphy-title'>আরবি ক্যালিগ্রাফি জেনারেটর (3D Shadow)</h2>", unsafe_allow_html=True)
 
 user_input = st.text_area("এখানে আরবি লিখুন:", placeholder="مثال: الجامعیة الغفوریة...", height=100)
 
-# এখানে আমরা গুগল ফন্টের 'Aref Ruqaa' এবং 'Amiri' ব্যবহার করছি যা ক্যালিগ্রাফির জন্য সেরা
+# HTML ও CSS কোড যা ৩D শ্যাডো এফেক্ট দিবে
 html_code = f"""
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -16,25 +29,38 @@ html_code = f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400..700&display=swap');
         
+        body {{
+            margin: 0;
+            padding: 0;
+            background-color: #000; /* ক্যালিগ্রাফির মতো ব্যাকগ্রাউন্ড */
+        }}
+        
         .calligraphy-box {{
-            background-color: white;
             padding: 50px;
-            border-radius: 15px;
             text-align: center;
             min-height: 250px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
         }}
+        
         .text-output {{
-            /* Thuluth/Diwani লুকের জন্য Aref Ruqaa অথবা Amiri Quran সবচেয়ে ভালো */
-            font-family: 'Aref Ruqaa', serif; 
-            font-size: 85px;
-            color: #1a1a1a;
+            font-family: 'Aref Ruqaa', serif; /* ফন্ট স্টাইল */
+            font-size: 80px;
+            color: #fff; /* ক্যালিগ্রাফির মতো সাদা রং */
             line-height: 1.4;
-            word-spacing: 10px;
-            letter-spacing: -1px; /* অক্ষরগুলো কাছাকাছি আনার জন্য */
+            word-spacing: 15px;
+            
+            /* ৩D শ্যাডো এফেক্ট দেওয়ার চেষ্টা */
+            text-shadow: 
+                -1px -1px 0 #333,
+                1px -1px 0 #333,
+                -1px 1px 0 #333,
+                1px 1px 0 #333,
+                0px 3px 0 #bbb,
+                3px 0px 0 #bbb,
+                -3px -3px 0 #fff,
+                3px 3px 6px rgba(0,0,0,0.6);
         }}
     </style>
 </head>
