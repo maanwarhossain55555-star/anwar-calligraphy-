@@ -1,82 +1,104 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Arabic Calligraphy Generator", layout="centered")
+st.set_page_config(page_title="Pro Arabic Calligraphy", layout="centered")
 
-# CSS দিয়ে ৩D শ্যাডো এফেক্ট তৈরি করা
 st.markdown("""
-<style>
-    .calligraphy-title {
-        text-align: center;
-        font-family: 'Aref Ruqaa', serif;
-        font-size: 30px;
-        color: #fff;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    }
-</style>
-""", unsafe_allow_html=True)
+    <style>
+    .main { background-color: #0e1117; }
+    h2 { color: #ffffff; text-align: center; font-family: 'Arial'; }
+    </style>
+    """, unsafe_allow_html=True)
 
-st.markdown("<h2 class='calligraphy-title'>আরবি ক্যালিগ্রাফি জেনারেটর (3D Shadow)</h2>", unsafe_allow_html=True)
+st.markdown("<h2>Pro Arabic Calligraphy Generator</h2>", unsafe_allow_html=True)
 
-user_input = st.text_area("এখানে আরবি লিখুন:", placeholder="مثال: الجامعیة الغفوریة...", height=100)
+user_input = st.text_area("আরবি লিখুন:", placeholder="এখানে আপনার আরবি টেক্সট লিখুন...", height=100)
 
-# HTML ও CSS কোড যা ৩D শ্যাডো এফেক্ট দিবে
-html_code = f"""
+# HTML, CSS এবং JS এর সমন্বয়ে ক্যালিগ্রাফি ও ডাউনলোড সিস্টেম
+html_template = f"""
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Amiri+Quran&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400..700&display=swap');
-        
-        body {{
-            margin: 0;
-            padding: 0;
-            background-color: #000; /* ক্যালিগ্রাফির মতো ব্যাকগ্রাউন্ড */
+        body {{ 
+            background-color: #0e1117; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            font-family: 'Arial', sans-serif;
         }}
         
-        .calligraphy-box {{
-            padding: 50px;
+        #capture-area {{
+            background: black;
+            padding: 60px 80px;
+            border-radius: 15px;
+            display: inline-block;
             text-align: center;
-            min-height: 250px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            border: 1px solid #333;
         }}
-        
-        .text-output {{
-            font-family: 'Aref Ruqaa', serif; /* ফন্ট স্টাইল */
-            font-size: 80px;
-            color: #fff; /* ক্যালিগ্রাফির মতো সাদা রং */
-            line-height: 1.4;
-            word-spacing: 15px;
-            
-            /* ৩D শ্যাডো এফেক্ট দেওয়ার চেষ্টা */
+
+        .calligraphy {{
+            font-family: 'Amiri Quran', serif;
+            font-size: 90px;
+            color: #FFFFFF;
+            line-height: 1.2;
+            margin: 0;
+            /* 3D Depth Shadow */
             text-shadow: 
-                -1px -1px 0 #333,
-                1px -1px 0 #333,
-                -1px 1px 0 #333,
-                1px 1px 0 #333,
-                0px 3px 0 #bbb,
-                3px 0px 0 #bbb,
-                -3px -3px 0 #fff,
-                3px 3px 6px rgba(0,0,0,0.6);
+                0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 
+                0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 
+                0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 
+                0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 
+                0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
         }}
+
+        .btn-download {{
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }}
+        .btn-download:hover {{ background-color: #45a049; }}
     </style>
 </head>
 <body>
-    <div class="calligraphy-box">
-        <div class="text-output">{user_input}</div>
+
+    <div id="capture-area">
+        <p class="calligraphy">{user_input}</p>
     </div>
+
+    <button class="btn-download" onclick="downloadImage()">Download as Photo (HD)</button>
+
+    <script>
+        function downloadImage() {{
+            const area = document.getElementById('capture-area');
+            html2canvas(area, {{ 
+                backgroundColor: "#000000",
+                scale: 3 // হাই কোয়ালিটির জন্য স্কেল বাড়ানো হয়েছে
+            }}).then(canvas => {{
+                let link = document.createElement('a');
+                link.download = 'calligraphy_design.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            }});
+        }}
+    </script>
 </body>
 </html>
 """
 
-if st.button("ক্যালিগ্রাফি জেনারেট করুন"):
+if st.button("ডিজাইন তৈরি করুন"):
     if user_input.strip() == "":
-        st.warning("অনুগ্রহ করে কিছু লিখুন।")
+        st.error("দয়া করে আগে কিছু লিখুন!")
     else:
-        components.html(html_code, height=450)
+        components.html(html_template, height=550, scrolling=True)
 
-st.markdown("---")
-st.caption("টিপস: আপনি যদি হুবহু 'Diwani Thuluth' এর মতো আরও ঘন ক্যালিগ্রাফি চান, তবে আপনার পিসিতে থাকা ঐ নির্দিষ্ট .ttf ফন্টটি GitHub-এ আপলোড করে সেটি CSS-এ লিঙ্ক করতে হবে।")
+st.info("দ্রষ্টব্য: এটি ওয়েব ফন্ট ব্যবহার করে সর্বোচ্চ ৩D লুক দেওয়ার চেষ্টা করে। হুবহু AI ইমেজের মতো রেজাল্ট পেতে গ্রাফিক ডিজাইন বা AI ইমেজ জেনারেটরই সেরা মাধ্যম।")
