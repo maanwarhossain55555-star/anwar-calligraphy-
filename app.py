@@ -1,35 +1,100 @@
-import streamlit as st
-import google.generativeai as genai
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic Calligraphy Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Aref+Ruqaa:wght@700&family=Reem+Kufi&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 80%;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            font-size: 20px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            text-align: right;
+        }
+        button {
+            padding: 12px 30px;
+            font-size: 18px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #34495e;
+        }
+        #output-area {
+            margin-top: 40px;
+            padding: 20px;
+            min-height: 150px;
+            border: 2px dashed #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+        }
+        .calligraphy-text {
+            /* আপনার ছবির মতো ঘন স্টাইল পাওয়ার জন্য ফন্ট */
+            font-family: 'Amiri Quran', serif; 
+            font-size: 80px;
+            line-height: 1.6;
+            color: #000;
+            word-spacing: 15px;
+            /* ক্যালিগ্রাফিক লুকের জন্য টেক্সট শ্যাডো ব্যবহার করা যায় */
+            text-shadow: 1px 1px 0px #eee;
+        }
+    </style>
+</head>
+<body>
 
-st.set_page_config(page_title="Arabic Tarkib AI", layout="wide")
+<div class="container">
+    <h2>আরবি ক্যালিগ্রাফি জেনারেটর</h2>
+    <textarea id="userInput" placeholder="এখানে আরবি লিখুন..."></textarea>
+    <br>
+    <button onclick="generateCalligraphy()">ক্যালিগ্রাফি তৈরি করুন</button>
 
-# এখানে আপনার নতুন তৈরি করা API Key-টি বসান
-API_KEY = "আপনার_নতুন_এপিআই_কী_এখানে_দিন" 
+    <div id="output-area">
+        <div id="result" class="calligraphy-text"></div>
+    </div>
+</div>
 
-try:
-    genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
-except Exception as e:
-    st.error(f"API কনফিগারেশন এরর: {e}")
+<script>
+    function generateCalligraphy() {
+        const input = document.getElementById('userInput').value;
+        const resultDiv = document.getElementById('result');
+        
+        if(input.trim() === "") {
+            alert("অনুগ্রহ করে কিছু লিখুন");
+            return;
+        }
+        
+        // ইনপুটটি রেজাল্ট বক্সে দেখানো
+        resultDiv.innerText = input;
+    }
+</script>
 
-st.title("🌍 গ্লোবাল আরবি তারকিব অ্যানালাইজার (AI)")
-
-user_input = st.text_input("আরবি বাক্যটি লিখুন:", placeholder="যেমন: نَصَرَ زَيْدٌ عَمْرًا")
-
-if st.button("পূর্ণাঙ্গ তারকিব বের করুন"):
-    if user_input:
-        with st.spinner('AI বিশ্লেষণ করছে...'):
-            try:
-                prompt = f"Analyze the Arabic sentence '{user_input}' and provide a detailed Tarkib in Bengali following Madrasa tradition."
-                response = model.generate_content(prompt)
-                
-                if response.text:
-                    st.success("বিশ্লেষণ সম্পন্ন!")
-                    st.write(response.text)
-                else:
-                    st.error("AI কোনো ফলাফল তৈরি করতে পারেনি।")
-            except Exception as e:
-                # এখানে এরর মেসেজটি দেখা যাবে
-                st.error(f"দুঃখিত, সমস্যাটি হলো: {str(e)}")
-    else:
-        st.warning("আগে একটি আরবি বাক্য লিখুন।")
+</body>
+</html>
