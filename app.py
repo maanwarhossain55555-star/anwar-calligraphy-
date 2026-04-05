@@ -1,39 +1,40 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# পেজ সেটআপ
 st.set_page_config(page_title="Arabic Calligraphy Generator", layout="centered")
 
-st.markdown("<h2 style='text-align: center;'>আরবি ক্যালিগ্রাফি জেনারেটর</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align: center;'>আরবি ক্যালিগ্রাফি জেনারেটর (Thuluth Style)</h2>", unsafe_allow_html=True)
 
-# আরবি ইনপুট নেওয়ার বক্স
 user_input = st.text_area("এখানে আরবি লিখুন:", placeholder="مثال: الجامعیة الغفوریة...", height=100)
 
-# HTML ও CSS কোড যা ক্যালিগ্রাফি তৈরি করবে
+# এখানে আমরা গুগল ফন্টের 'Aref Ruqaa' এবং 'Amiri' ব্যবহার করছি যা ক্যালিগ্রাফির জন্য সেরা
 html_code = f"""
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Amiri+Quran&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400..700&display=swap');
+        
         .calligraphy-box {{
             background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            border: 2px solid #eee;
+            padding: 50px;
+            border-radius: 15px;
             text-align: center;
-            min-height: 200px;
+            min-height: 250px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
         }}
         .text-output {{
-            font-family: 'Amiri Quran', serif;
-            font-size: 70px;
-            color: black;
-            word-wrap: break-word;
-            line-height: 1.5;
+            /* Thuluth/Diwani লুকের জন্য Aref Ruqaa অথবা Amiri Quran সবচেয়ে ভালো */
+            font-family: 'Aref Ruqaa', serif; 
+            font-size: 85px;
+            color: #1a1a1a;
+            line-height: 1.4;
+            word-spacing: 10px;
+            letter-spacing: -1px; /* অক্ষরগুলো কাছাকাছি আনার জন্য */
         }}
     </style>
 </head>
@@ -45,12 +46,11 @@ html_code = f"""
 </html>
 """
 
-# জেনারেট বাটন
 if st.button("ক্যালিগ্রাফি জেনারেট করুন"):
     if user_input.strip() == "":
-        st.warning("অনুগ্রহ করে আগে কিছু আরবি টেক্সট লিখুন।")
+        st.warning("অনুগ্রহ করে কিছু লিখুন।")
     else:
-        # HTML কম্পোনেন্ট রেন্ডার করা
-        components.html(html_code, height=400)
+        components.html(html_code, height=450)
 
-st.info("দ্রষ্টব্য: এই কোডটি 'Amiri' ক্যালিগ্রাফি ফন্ট ব্যবহার করে আপনার টেক্সটকে শৈল্পিক রূপ দেয়।")
+st.markdown("---")
+st.caption("টিপস: আপনি যদি হুবহু 'Diwani Thuluth' এর মতো আরও ঘন ক্যালিগ্রাফি চান, তবে আপনার পিসিতে থাকা ঐ নির্দিষ্ট .ttf ফন্টটি GitHub-এ আপলোড করে সেটি CSS-এ লিঙ্ক করতে হবে।")
