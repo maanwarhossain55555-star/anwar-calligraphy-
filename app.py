@@ -3,29 +3,33 @@ import streamlit.components.v1 as components
 import base64
 import os
 
-st.set_page_config(page_title="Marhaban Calligraphy Creator", layout="centered")
+# পেজ টাইটেল এবং আইকন সেটআপ
+st.set_page_config(page_title="ANWAR CALLIGRAPHY", layout="centered")
 
-# ফন্ট ফাইলটি লোড করার ফাংশন
+# ফন্ট লোড করার ফাংশন
 def get_font_base64(font_path):
-    with open(font_path, "rb") as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+    try:
+        if os.path.exists(font_path):
+            with open(font_path, "rb") as f:
+                data = f.read()
+            return base64.b64encode(data).decode()
+    except Exception as e:
+        return None
+    return None
 
-# ফন্ট ফাইলের নাম নিশ্চিত করুন (আপনার আপলোড করা ফাইল অনুযায়ী)
+# আপনার আপলোড করা ফন্ট ফাইলের নাম
 font_filename = "MarhabanArabicDEMO-Bold.otf" 
+font_base64 = get_font_base64(font_filename)
 
-# ফন্টটি যদি একই ফোল্ডারে থাকে তবে এটি কাজ করবে
-if os.path.exists(font_filename):
-    font_base64 = get_font_base64(font_filename)
-else:
-    # ফাইল না পেলে এরর এড়াতে খালি রাখা হলো
-    font_base64 = ""
-    st.warning("ফন্ট ফাইলটি পাওয়া যায়নি। অনুগ্রহ করে নিশ্চিত করুন যে 'MarhabanArabicDEMO-Bold.otf' ফাইলটি আপনার GitHub-এর মূল ফোল্ডারে আছে।")
+# অ্যাপের ইন্টারফেস টাইটেল
+st.markdown("<h1 style='text-align: center; color: white; font-family: sans-serif;'>ANWAR CALLIGRAPHY</h1>", unsafe_allow_html=True)
 
-st.markdown("<h2 style='text-align: center; color: white;'>Marhaban Arabic Calligraphy</h2>", unsafe_allow_html=True)
+user_input = st.text_area("আরবি টেক্সট লিখুন:", placeholder="مثال: بسم الله الرحمن الرحيم", height=100)
 
-user_input = st.text_area("আরবি লিখুন:", placeholder="مثال: الجامعیة الغفوریة...", height=100)
+if not font_base64:
+    st.error(f"'{font_filename}' ফাইলটি পাওয়া যায়নি। এটি আপনার GitHub রিপোজিটরিতে আপলোড করা আছে কি না নিশ্চিত করুন।")
 
+# ডিজাইন টেমপ্লেট
 html_template = f"""
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -33,8 +37,8 @@ html_template = f"""
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @font-face {{
-            font-family: 'Marhaban';
-            src: url(data:font/opentype;base64,{font_base64});
+            font-family: 'MarhabanFont';
+            src: url(data:font/opentype;base64,{font_base64 if font_base64 else ""});
         }}
         
         body {{ 
@@ -42,60 +46,74 @@ html_template = f"""
             margin: 0; 
             display: flex; 
             flex-direction: column; 
-            align-items: center; 
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }}
         
         #capture-area {{
             background-color: #000;
-            padding: 60px 100px;
+            padding: 60px;
             border-radius: 15px;
             text-align: center;
-            width: fit-content;
-            margin-top: 20px;
-            border: 1px solid #333;
+            min-width: 600px;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }}
 
         .calligraphy {{
-            font-family: 'Marhaban', sans-serif;
-            font-size: 100px;
+            font-family: 'MarhabanFont', serif;
+            font-size: 120px;
             color: #FFFFFF;
-            line-height: 1.2;
             margin: 0;
-            white-space: nowrap;
-            /* হালকা ৩D শ্যাডো যা লেখাকে নষ্ট করবে না */
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            padding: 0;
+            line-height: 0.8; /* লেখা যাতে বেশি নিচে না নামে */
+            display: inline-block;
+            text-shadow: 2px 2px 10px rgba(255,255,255,0.1);
         }}
 
-        .btn-download {{
+        .download-btn {{
             margin-top: 30px;
-            padding: 12px 30px;
-            background-color: #1e88e5;
+            padding: 15px 40px;
+            background-color: #1a73e8;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 30px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.3s;
+        }}
+        .download-btn:hover {{
+            background-color: #1557b0;
+            transform: scale(1.05);
         }}
     </style>
 </head>
 <body>
 
     <div id="capture-area">
-        <p class="calligraphy">{user_input}</p>
+        <div class="calligraphy">{user_input}</div>
     </div>
 
-    <button class="btn-download" onclick="downloadImage()">Download HD Photo</button>
+    <button class="download-btn" onclick="downloadImage()">Download HD Calligraphy</button>
 
     <script>
         function downloadImage() {{
             const area = document.getElementById('capture-area');
             html2canvas(area, {{ 
                 backgroundColor: "#000000",
-                scale: 3 
+                scale: 4, /* হাই-রেজোলিউশন ছবির জন্য */
+                logging: false,
+                useCORS: true
             }}).then(canvas => {{
                 let link = document.createElement('a');
-                link.download = 'marhaban_calligraphy.png';
-                link.href = canvas.toDataURL();
+                link.download = 'Anwar_Calligraphy.png';
+                link.href = canvas.toDataURL("image/png");
                 link.click();
             }});
         }}
@@ -106,6 +124,10 @@ html_template = f"""
 
 if st.button("ডিজাইন তৈরি করুন"):
     if user_input.strip() == "":
-        st.error("অনুগ্রহ করে কিছু লিখুন!")
+        st.warning("আগে কিছু আরবি লিখুন!")
     else:
-        components.html(html_template, height=550)
+        # কম্পোনেন্ট হাইট বাড়ানো হয়েছে যাতে কোনো অংশ না কাটে
+        components.html(html_template, height=600)
+
+st.markdown("---")
+st.caption("© 2026 ANWAR CALLIGRAPHY | Powered by Marhaban Font")
